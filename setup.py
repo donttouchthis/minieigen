@@ -20,13 +20,22 @@ if sys.platform=='win32':
     # * https://bugs.launchpad.net/panda3d/+bug/919237
         define_macros+=[('EIGEN_DONT_VECTORIZE',None)]
 else:
-    if ('Fedora' == platform.linux_distribution()[0] or
-        'CentOS' in platform.linux_distribution()[0]):
+    if 'CentOS' in platform.linux_distribution()[0]:
+        # maybe will change in future with CentOS 8
+        # 7 == int(platform.linux_distribution()[1].split(".")[0])
         libraries=['boost_python%s'%('' if sys.version_info[0] == 2 else '3')]
+    elif 'Fedora' == platform.linux_distribution()[0]:
+        if   (29 >= int(platform.linux_distribution()[1]) ):
+            libraries=['boost_python%s'%('' if sys.version_info[0] == 2 else '3')]
+        elif (30 == int(platform.linux_distribution()[1])):
+           libraries=['boost_python%d%d'%(sys.version_info[0],sys.version_info[1])]
     else:
+        # Debian based distributions
         libraries=['boost_python-py%d%d'%(sys.version_info[0],sys.version_info[1])]
+
     library_dirs=[]
     include_dirs=['/usr/include/eigen3','/usr/local/include/eigen3','minieigen']
+
 
 setup(name='minieigen',
     version='0.5.4',
